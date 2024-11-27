@@ -50,12 +50,13 @@ RUN echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf && \
     echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
 # 复制配置文件和脚本
 COPY mssb /mssb/
+COPY watch /watch/
 # 给予监听脚本可执行权限
-RUN chmod +x /mssb/watch_mosdns.sh /mssb/watch_sing_box.sh /mssb/update_mosdns.sh /mssb/update_sb.sh /mssb/update_cn.sh
+RUN chmod +x /watch/watch_mosdns.sh /watch/watch_sing_box.sh /watch/update_mosdns.sh /watch/update_sb.sh /watch/update_cn.sh
 # 添加 cron 任务，/etc/cron.d
-RUN echo "0 4 * * 1 root /mssb/update_mosdns.sh >> /dev/stdout 2>&1" > /etc/cron.d/update_file && \
-    echo "10 4 * * 1 root /mssb/update_sb.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
-    echo "15 4 * * 1 root /mssb/update_cn.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
+RUN echo "0 4 * * 1 root /watch/update_mosdns.sh >> /dev/stdout 2>&1" > /etc/cron.d/update_file && \
+    echo "10 4 * * 1 root /watch/update_sb.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
+    echo "15 4 * * 1 root /watch/update_cn.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
     chmod 0644 /etc/cron.d/update_file
 # 应用 cron 配置
 RUN crontab -l | cat - /etc/cron.d/update_file | crontab -
