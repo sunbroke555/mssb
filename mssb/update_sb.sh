@@ -57,5 +57,14 @@ else
     exit 1
 fi
 
+# 追加 Git 克隆命令，更新 UI 文件
+echo "[$(date)] 正在从 GitHub 克隆最新的 UI 文件..."
+if git clone https://github.com/metacubex/metacubexd.git -b gh-pages /mssb/sing-box/ui; then
+    echo "[$(date)] UI 文件克隆成功。"
+else
+    echo "[$(date)] UI 文件克隆失败，请检查 GitHub URL 或网络连接。"
+    exit 1
+fi
+
 # 更新完成日志
-echo "[$(date)] Sing-box 更新并重启成功。"
+echo "[$(date)] Sing-box 更新并重启成功，UI 文件已更新。"
