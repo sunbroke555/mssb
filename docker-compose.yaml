@@ -1,6 +1,6 @@
 services:
   mosdns:
-    image: 'baozaodetudou/mssb:test'
+    image: 'baozaodetudou/mssb'
     container_name: mssb
     network_mode: "host"
     volumes:
