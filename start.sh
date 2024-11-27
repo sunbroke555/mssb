@@ -96,6 +96,6 @@ sleep 1
 # 应用新的 nftables 配置
 echo "新规则生效"
 sleep 1
-/usr/sbin/nft -f /etc/nftables.conf
+#/usr/sbin/nft -f /etc/nftables.conf
 
 exec supervisord -c /etc/supervisord.conf
