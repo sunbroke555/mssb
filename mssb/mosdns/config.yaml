@@ -1,6 +1,6 @@
 log:
   level: error # 设置日志级别为error
-  file: "./mosdns.log" # 日志文件路径
+#  file: "./mosdns.log" # 日志文件路径 注释输出至 stderr 。
   production: false # 非生产环境配置
 
 plugins:
