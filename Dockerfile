@@ -58,9 +58,7 @@ RUN echo "0 4 * * 1 root /mssb/update_mosdns.sh >> /dev/stdout 2>&1" > /etc/cron
     echo "15 4 * * 1 root /mssb/update_cn.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
     chmod 0644 /etc/cron.d/update_file
 # 应用 cron 配置
-RUN crontab -l | cat - /etc/cron.d/update_mosdns /etc/cron.d/update_sb /etc/cron.d/update_cn | crontab -
-# 复制 nftables 配置文件
-COPY nftables.conf /etc/nftables.conf
+RUN crontab -l | cat - /etc/cron.d/update_file | crontab -
 # 配置 supervisord 文件
 COPY supervisord.conf /etc/supervisord.conf
 # 暴露端口
