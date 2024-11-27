@@ -9,3 +9,4 @@
 # Ignored files for GNOME extension git repository
 .idea
 
+.DS_Store
