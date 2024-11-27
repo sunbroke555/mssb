@@ -1,0 +1,8 @@
+services:
+  mosdns:
+    image: 'baozaodetudou/mssb:test'
+    container_name: mssb
+    network_mode: "host"
+    volumes:
+      - './mssb:/mssb'
+    restart: unless-stopped
