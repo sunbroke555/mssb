@@ -1,14 +1,23 @@
 # 使用 Debian 基础镜像
-FROM debian:bookworm
+FROM debian:bookworm-slim
 USER root
+
+# 安装必要的工具和 tzdata 来配置时区
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    ca-certificates iproute2 supervisor curl git wget lsof tar gawk sed cron unzip nano nftables procps inotify-tools && \
+    ca-certificates iproute2 supervisor curl git wget lsof tar gawk sed cron unzip nano nftables procps inotify-tools tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# 设置时区为 Asia/Shanghai
+RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+# 设置环境变量 TZ 为 Asia/Shanghai
+ENV TZ=Asia/Shanghai
+
 # 设置工作目录
 WORKDIR /mssb
-# 获取 mosdns 版本号并下载
 ARG TARGETARCH
 # TAG 值，根据 TARGETARCH 设置为不同的值
 # 下载并安装 MosDNS
