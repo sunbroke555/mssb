@@ -77,6 +77,8 @@ table inet singbox {
 
   chain mangle-prerouting {
     type filter hook prerouting priority mangle; policy accept;
+    # 排除 DNS 流量
+    udp dport 53 return
     # 在这里插入逗号分隔的接口列表
     iifname { $(IFS=,; echo "${interfaces_to_include[*]}") } meta l4proto { tcp, udp } ct direction original goto singbox-tproxy
   }
