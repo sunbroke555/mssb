@@ -1,16 +1,17 @@
-# 使用 Alpine 基础镜像
-FROM alpine:3.18
+# 使用 Debian 基础镜像
+FROM debian:bookworm-slim
 USER root
 
 # 安装必要的工具和 tzdata 来配置时区
-RUN apk update && \
-    apk add --no-cache \
-    ca-certificates iproute2 curl git wget lsof tar gawk sed unzip nano nftables procps inotify-tools tzdata bash dcron supervisor && \
-    rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates iproute2 supervisor curl git wget lsof tar gawk sed cron unzip nano nftables procps inotify-tools tzdata && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # 设置时区为 Asia/Shanghai
 RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone
+    dpkg-reconfigure --frontend noninteractive tzdata
 
 # 设置环境变量 TZ 为 Asia/Shanghai
 ENV TZ=Asia/Shanghai
@@ -51,8 +52,11 @@ RUN LATEST_RELEASE_URL="https://github.com/filebrowser/filebrowser/releases/late
 # 复制配置文件和脚本
 COPY mssb /mssb/
 COPY watch /watch/
+COPY start.sh /etc/start.sh
+
 # 给予监听脚本可执行权限
-RUN chmod +x /watch/watch_mosdns.sh /watch/watch_sing_box.sh /watch/update_mosdns.sh /watch/update_sb.sh /watch/update_cn.sh
+RUN chmod +x /watch/watch_mosdns.sh /watch/watch_sing_box.sh /watch/update_mosdns.sh \
+    /watch/update_sb.sh /watch/update_cn.sh /watch/tproxy.sh /etc/start.sh
 # 添加 cron 任务，/etc/cron.d
 RUN echo "0 4 * * 1 root /watch/update_mosdns.sh >> /dev/stdout 2>&1" > /etc/cron.d/update_file && \
     echo "10 4 * * 1 root /watch/update_sb.sh >> /dev/stdout 2>&1" >> /etc/cron.d/update_file && \
@@ -60,9 +64,12 @@ RUN echo "0 4 * * 1 root /watch/update_mosdns.sh >> /dev/stdout 2>&1" > /etc/cro
     chmod 0644 /etc/cron.d/update_file
 # 应用 cron 配置
 RUN crontab -l | cat - /etc/cron.d/update_file | crontab -
+# 配置内核网络转发
+RUN echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf && \
+    echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
 # 配置 supervisord 文件
 COPY supervisord.conf /etc/supervisord.conf
 # 暴露端口
 EXPOSE 53/tcp 53/udp 6666/tcp 6666/udp 9090/tcp 8080/tcp 8088/tcp 7891/tcp
 # 设置 supervisord 为默认启动命令
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/etc/start.sh"]
