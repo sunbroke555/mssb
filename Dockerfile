@@ -1,17 +1,16 @@
-# 使用 Debian 基础镜像
-FROM debian:bookworm-slim
+# 使用 Alpine 基础镜像
+FROM alpine:3.18
 USER root
 
 # 安装必要的工具和 tzdata 来配置时区
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates iproute2 supervisor curl git wget lsof tar gawk sed cron unzip nano nftables procps inotify-tools tzdata && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add --no-cache \
+    ca-certificates iproute2 curl git wget lsof tar gawk sed unzip nano nftables procps inotify-tools tzdata bash dcron supervisor && \
+    rm -rf /var/cache/apk/*
 
 # 设置时区为 Asia/Shanghai
 RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    dpkg-reconfigure --frontend noninteractive tzdata
+    echo "Asia/Shanghai" > /etc/timezone
 
 # 设置环境变量 TZ 为 Asia/Shanghai
 ENV TZ=Asia/Shanghai
