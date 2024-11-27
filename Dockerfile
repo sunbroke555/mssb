@@ -1,12 +1,7 @@
 # 使用 Debian 基础镜像
 FROM debian:bookworm
 USER root
-# 创建 /etc/apt/sources.list 文件并使用清华源
-RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free" > /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security/ bookworm-security main contrib non-free" >> /etc/apt/sources.list && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates iproute2 supervisor curl git wget lsof tar gawk sed cron unzip nano nftables procps inotify-tools && \
     apt-get clean && \
@@ -15,8 +10,7 @@ RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib
 WORKDIR /mssb
 # 获取 mosdns 版本号并下载
 ARG TARGETARCH
-RUN echo "目标架构为：${TARGETARCH}"  # 打印目标架构
-# 设置 TAG 值，根据 TARGETARCH 设置为不同的值
+# TAG 值，根据 TARGETARCH 设置为不同的值
 # 下载并安装 MosDNS
 RUN LATEST_RELEASE_URL="https://github.com/IrineSistiana/mosdns/releases/latest" && \
     LATEST_VERSION=$(curl -sL -o /dev/null -w %{url_effective} $LATEST_RELEASE_URL | awk -F '/' '{print $NF}') && \
@@ -45,9 +39,7 @@ RUN LATEST_RELEASE_URL="https://github.com/filebrowser/filebrowser/releases/late
     tar -zxvf /tmp/filebrowser.tar.gz -C /usr/local/bin && \
     chmod +x /usr/local/bin/filebrowser && \
     rm -rf /tmp/*
-# 配置内核网络转发
-RUN echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf && \
-    echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
+
 # 复制配置文件和脚本
 COPY mssb /mssb/
 COPY watch /watch/
