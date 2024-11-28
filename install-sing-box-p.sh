@@ -999,36 +999,7 @@ mkdir /mssb/sing-box/providers
 ######################启动脚本################################
 install_service() {
     echo -e "配置系统服务文件"
-    sleep 1
 
-    # 检查服务文件是否存在，如果不存在则创建
-    sing_box_service_file="/etc/systemd/system/sing-box.service"
-if [ ! -f "$sing_box_service_file" ]; then
-    # 如果服务文件不存在，则创建
-    cat << EOF > "$sing_box_service_file"
-[Unit]
-Description=Sing-Box service
-Documentation=https://sing-box.sagernet.org
-After=network.target nss-lookup.target
-
-[Service]
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-ExecStart=/usr/local/bin/sing-box run -c /mssb/sing-box/config.json
-Restart=on-failure
-RestartSec=1800s
-LimitNOFILE=infinity
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    echo "sing-box服务创建完成"  
-else
-    # 如果服务文件已经存在，则给出警告
-    echo "警告：sing-box服务文件已存在，无需创建"
-fi 
-    sleep 1
-    systemctl daemon-reload
     
 }
 ################################安装tproxy################################

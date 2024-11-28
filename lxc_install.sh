@@ -1,58 +1,119 @@
 #!/bin/bash
 
-# 记录当前时间
-echo "[$(date)] 开始下载MosDNS..."
+# 设置日志输出函数
+log() {
+    echo "[$(date)] $1"
+}
 
-# 判断 CPU 架构
-if [[ $(uname -m) == "aarch64" ]]; then
-    TARGETARCH="arm64"
-    echo "[$(date)] 检测到 CPU 架构为 arm64。"
-elif [[ $(uname -m) == "x86_64" ]]; then
-    TARGETARCH="amd64"
-    echo "[$(date)] 检测到 CPU 架构为 amd64。"
-else
-    TARGETARCH="未知"
-    echo "[$(date)] 无法识别的 CPU 架构：$(uname -m)，脚本退出。"
-    exit 1  # 退出状态为 1，表示错误退出
-fi
-# 获取系统架构
-TARGETARCH=$(uname -m)
-LATEST_RELEASE_URL="https://github.com/IrineSistiana/mosdns/releases/latest"
-LATEST_VERSION=$(curl -sL -o /dev/null -w %{url_effective} $LATEST_RELEASE_URL | awk -F '/' '{print $NF}')
-MOSDNS_URL="https://github.com/IrineSistiana/mosdns/releases/download/${LATEST_VERSION}/mosdns-linux-${TARGETARCH}.zip"
-
-# 下载最新的 MosDNS
-echo "[$(date)] 正在从 $MOSDNS_URL 下载 MosDNS..."
-if curl -L -o /tmp/mosdns.zip $MOSDNS_URL; then
-    echo "[$(date)] MosDNS 下载成功。"
-else
-    echo "[$(date)] MosDNS 下载失败，请检查网络连接或 URL 是否正确。"
+# 更新系统和安装必要的软件
+log "更新系统..."
+if ! apt update && apt -y upgrade; then
+    log "系统更新失败！退出脚本。"
     exit 1
 fi
 
-# 解压并安装 MosDNS
-echo "[$(date)] 正在解压 MosDNS..."
+log "安装必要的软件包..."
+if ! apt install -y supervisor inotify-tools curl git wget tar gawk sed cron unzip nano; then
+    log "软件包安装失败！退出脚本。"
+    exit 1
+fi
+
+# 检测系统架构
+ARCH=""
+case "$(uname -m)" in
+    "aarch64")
+        ARCH="arm64"
+        log "检测到 CPU 架构为 arm64。"
+        ;;
+    "x86_64")
+        ARCH="amd64"
+        log "检测到 CPU 架构为 amd64。"
+        ;;
+    *)
+        log "无法识别的 CPU 架构：$(uname -m)。脚本退出。"
+        exit 1
+        ;;
+esac
+
+# 下载并安装 MosDNS
+log "开始下载 MosDNS..."
+LATEST_MOSDNS_VERSION=$(curl -sL -o /dev/null -w %{url_effective} https://github.com/IrineSistiana/mosdns/releases/latest | awk -F '/' '{print $NF}')
+MOSDNS_URL="https://github.com/IrineSistiana/mosdns/releases/download/${LATEST_MOSDNS_VERSION}/mosdns-linux-${ARCH}.zip"
+
+log "从 $MOSDNS_URL 下载 MosDNS..."
+if curl -L -o /tmp/mosdns.zip "$MOSDNS_URL"; then
+    log "MosDNS 下载成功。"
+else
+    log "MosDNS 下载失败，请检查网络连接或 URL 是否正确。"
+    exit 1
+fi
+
+log "解压 MosDNS..."
 if unzip -o /tmp/mosdns.zip -d /usr/local/bin; then
-    echo "[$(date)] MosDNS 解压成功。"
+    log "MosDNS 解压成功。"
 else
-    echo "[$(date)] MosDNS 解压失败，请检查压缩包是否正确。"
+    log "MosDNS 解压失败，请检查压缩包是否正确。"
     exit 1
 fi
 
-# 设置执行权限
-echo "[$(date)] 正在设置 MosDNS 可执行权限..."
+log "设置 MosDNS 可执行权限..."
 if chmod +x /usr/local/bin/mosdns; then
-    echo "[$(date)] 设置执行权限成功。"
+    log "设置权限成功。"
 else
-    echo "[$(date)] 设置执行权限失败，请检查文件路径和权限设置。"
+    log "设置权限失败，请检查文件路径和权限设置。"
     exit 1
 fi
 
-LATEST_RELEASE_URL="https://github.com/filebrowser/filebrowser/releases/latest" && \
-LATEST_VERSION=$(curl -sL -o /dev/null -w %{url_effective} $LATEST_RELEASE_URL | awk -F '/' '{print $NF}') && \
-DOWNLOAD_URL="https://github.com/filebrowser/filebrowser/releases/download/${LATEST_VERSION}/linux-${TARGETARCH}-filebrowser.tar.gz" && \
-echo "正在下载 Filebrowser: 架构=${TARGETARCH}, 版本=${LATEST_VERSION}" && \
-curl -L --fail -o /tmp/filebrowser.tar.gz $DOWNLOAD_URL && \
-tar -zxvf /tmp/filebrowser.tar.gz -C /usr/local/bin && \
-chmod +x /usr/local/bin/filebrowser
+# 下载并安装 Filebrowser
+log "开始下载 Filebrowser..."
+LATEST_FILEBROWSER_VERSION=$(curl -sL -o /dev/null -w %{url_effective} https://github.com/filebrowser/filebrowser/releases/latest | awk -F '/' '{print $NF}')
+FILEBROWSER_URL="https://github.com/filebrowser/filebrowser/releases/download/${LATEST_FILEBROWSER_VERSION}/linux-${ARCH}-filebrowser.tar.gz"
 
+log "从 $FILEBROWSER_URL 下载 Filebrowser..."
+if curl -L --fail -o /tmp/filebrowser.tar.gz "$FILEBROWSER_URL"; then
+    log "Filebrowser 下载成功。"
+else
+    log "Filebrowser 下载失败，请检查网络连接或 URL 是否正确。"
+    exit 1
+fi
+
+log "解压 Filebrowser..."
+if tar -zxvf /tmp/filebrowser.tar.gz -C /usr/local/bin; then
+    log "Filebrowser 解压成功。"
+else
+    log "Filebrowser 解压失败，请检查压缩包是否正确。"
+    exit 1
+fi
+
+log "设置 Filebrowser 可执行权限..."
+if chmod +x /usr/local/bin/filebrowser; then
+    log "Filebrowser 设置权限成功。"
+else
+    log "Filebrowser 设置权限失败，请检查文件路径和权限设置。"
+    exit 1
+fi
+
+# 配置文件和脚本设置
+log "复制配置文件..."
+cp supervisord.conf /etc/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
+cp -r mssb / || { log "复制 mssb 目录失败！退出脚本。"; exit 1; }
+cp -r watch / || { log "复制 watch 目录失败！退出脚本。"; exit 1; }
+
+log "设置脚本可执行权限..."
+chmod +x /watch/*.sh || { log "设置 /watch/*.sh 权限失败！退出脚本。"; exit 1; }
+
+# 安装 Sing-Box
+log "安装 Sing-Box..."
+if ! bash install-sing-box-p.sh; then
+    log "安装 Sing-Box 失败！退出脚本。"
+    exit 1
+fi
+
+# 重启 Supervisor
+log "重启 Supervisor..."
+if ! supervisorctl reload; then
+    log "重启 Supervisor 失败！"
+    exit 1
+fi
+
+log "脚本执行完成。"
