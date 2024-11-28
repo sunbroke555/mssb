@@ -70,7 +70,7 @@ fi
     
 }
 ui_install(){
-    echo "是否拉取ui源码 y/n"
+    echo "是否更新ui源码 y/n"
     read choice
 if [ "$choice" = "y" ]; then
     git clone https://github.com/metacubex/metacubexd.git -b gh-pages /msb/sing-box/ui
@@ -91,7 +91,7 @@ git config core.sparseCheckout true
 echo "singbox_rule" >> .git/info/sparse-checkout
 git pull origin main
 rm -rf .git
-mv /root/singbox_rule /mssb/sing-box/rule
+mv ./singbox_rule /mssb/sing-box/rule
 mkdir /mssb/sing-box/providers
 
  echo '
