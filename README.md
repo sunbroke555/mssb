@@ -26,3 +26,8 @@
 +------------------+           +------------------+
 
 
+8088端口是 filebrowser服务  用户密码默认admin admn
+6666是singbox的dns端口
+53是mosdns端口
+9090是singbox UI界面端口
+
