@@ -73,7 +73,7 @@ ui_install(){
     echo "是否更新ui源码 y/n"
     read choice
 if [ "$choice" = "y" ]; then
-    git clone https://github.com/metacubex/metacubexd.git -b gh-pages /msb/sing-box/ui
+    git clone https://github.com/metacubex/metacubexd.git -b gh-pages /mssb/sing-box/ui
     
 elif [ "$choice" = "n" ]; then
     echo "请手动下载源码并解压至/mssb/sing-box/ui."
