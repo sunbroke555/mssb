@@ -3,9 +3,9 @@
 install_singbox() {
     apt update && apt -y upgrade || { echo "更新失败！退出脚本"; exit 1; }
     apt install curl git wget tar gawk sed cron unzip nano -y || { echo "更新失败！退出脚本"; exit 1; }
-#    echo -e "\n设置时区为Asia/Shanghai"
-#    timedatectl set-timezone Asia/Shanghai || { echo -e "\e[31m时区设置失败！退出脚本\e[0m"; exit 1; }
-#    echo -e "\e[32m时区设置成功\e[0m"
+    echo -e "\n设置时区为Asia/Shanghai"
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone || { echo -e "\e[31m时区设置失败！退出脚本\e[0m"; exit 1; }
+    echo -e "\e[32m时区设置成功\e[0m"
     echo -e "开始安装P_sing-box"
     sleep 1
       # 判断 CPU 架构
