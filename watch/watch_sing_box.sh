@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 需要监听的目录
-CONFIG_DIR="/etc/sing-box"
+CONFIG_DIR="/mssb/sing-box"
 
 # 使用 inotifywait 监听特定文件类型的变动
 while true; do
