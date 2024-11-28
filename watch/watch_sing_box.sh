@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# 延迟 60 秒
+sleep 60
 # 需要监听的目录
 CONFIG_DIR="/mssb/sing-box"
 
