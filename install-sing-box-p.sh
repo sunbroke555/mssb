@@ -110,7 +110,7 @@ mkdir /mssb/sing-box/providers
     },
     "cache_file": {
       "enabled": true,
-      "path": "mssb/sing-box/cache.db",
+      "path": "/mssb/sing-box/cache.db",
       "store_fakeip": true
     }
   },

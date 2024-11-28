@@ -95,7 +95,7 @@ fi
 
 # 配置文件和脚本设置
 log "复制配置文件..."
-cp supervisord.conf /etc/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
+cp supervisord.conf /etc/supervisor/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
 cp -r mssb / || { log "复制 mssb 目录失败！退出脚本。"; exit 1; }
 cp -r watch / || { log "复制 watch 目录失败！退出脚本。"; exit 1; }
 
