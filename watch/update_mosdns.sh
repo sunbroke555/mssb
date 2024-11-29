@@ -16,7 +16,6 @@ else
     exit 1  # 退出状态为 1，表示错误退出
 fi
 # 获取系统架构
-TARGETARCH=$(uname -m)
 LATEST_RELEASE_URL="https://github.com/IrineSistiana/mosdns/releases/latest"
 LATEST_VERSION=$(curl -sL -o /dev/null -w %{url_effective} $LATEST_RELEASE_URL | awk -F '/' '{print $NF}')
 MOSDNS_URL="https://github.com/IrineSistiana/mosdns/releases/download/${LATEST_VERSION}/mosdns-linux-${TARGETARCH}.zip"
