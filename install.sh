@@ -145,19 +145,33 @@ customize_settings() {
     read choice
     if [ "$choice" = "y" ]; then
         while true; do
-            read -p "输入订阅连接（可以输入多个，以空格分隔）：" suburl
-#            read -p "输入订阅连接：" suburl
-            if [[ $suburl == http* ]]; then
-                echo "已设置订阅连接地址：$suburl"
+            read -p "输入订阅连接（可以输入多个，以空格分隔）：" suburls
+            valid=true
+
+            # 遍历每个输入的链接，验证是否符合格式要求
+            for url in $suburls; do
+                if [[ $url != http* ]]; then
+                    echo "无效的订阅连接：$url，请以 http 开头。"
+                    valid=false
+                    break
+                fi
+            done
+
+            # 如果所有链接都有效，将它们一次性传递给 Python 脚本
+            if [ "$valid" = true ]; then
+                echo "已设置订阅连接地址：$suburls"
+                # 调用 Python 脚本，并将所有链接作为一个参数传递
                 python3 update_sub.py -v "$suburls"
                 log "订阅连接地址设置完成。"
                 break
             else
-                echo "无效的订阅连接，请以 http 开头。"
+                log "部分订阅连接无效，请重新输入。"
             fi
         done
     elif [ "$choice" = "n" ]; then
         log "请手动配置 config.json."
+    else
+        log "无效选择，请输入 y 或 n。"
     fi
 }
 

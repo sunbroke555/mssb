@@ -10,7 +10,7 @@ def modify_outbound_providers(json_file, outbound_providers_value):
         return
 
     # 读取 JSON 文件
-    with open(json_file, 'r') as file:
+    with open(json_file, 'r', encoding='utf-8') as file:
         try:
             data = json.load(file)
         except json.JSONDecodeError as e:
@@ -26,11 +26,11 @@ def modify_outbound_providers(json_file, outbound_providers_value):
     data['outbound_providers'] = outbound_providers_value
 
     # 将修改后的内容写回 JSON 文件
-    with open(json_file, 'w') as file:
-        json.dump(data, file, indent=4)
+    with open(json_file, 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
 
     print("outbound_providers 已成功更新为:")
-    print(json.dumps(data['outbound_providers'], indent=4))
+    print(json.dumps(data['outbound_providers'], indent=4, ensure_ascii=False))
 
 # 主函数
 if __name__ == "__main__":
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     outbound_providers_value = []
     for index, url in enumerate(args.value.split(' '), start=1):
         # 构建 outbound_providers 的新值
-        outbound_providers_value = {
+        outbound_providers_value.append({
             "type": "remote",
             "path": f"/mssb/sing-box/providers/{index}.yaml",
             "tag": f"✈️机场{index}",
@@ -56,6 +56,6 @@ if __name__ == "__main__":
             "download_ua": "clash.meta",
             "download_interval": "24h0m0s",
             "download_detour": "direct"
-        }
+        })
     # 修改 outbound_providers
     modify_outbound_providers(args.file, outbound_providers_value)
