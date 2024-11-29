@@ -126,7 +126,6 @@ install_singbox() {
         if [ "$replace_confirm" = "y" ]; then
             log "正在替换升级 Sing-Box"
             mv sing-box /usr/local/bin/
-            systemctl restart sing-box
             log "Sing-Box P核升级完毕"
         else
             log "用户取消了替换升级操作"
@@ -390,7 +389,6 @@ configure_files() {
     # 复制 mssb/sing-box 目录
     log "复制 mssb/sing-box 目录..."
     check_and_copy_folder "sing-box"
-    # 复制 fb 和 mosdns 目录，但仅当它们不存在时才进行
     check_and_copy_folder "fb"
     check_and_copy_folder "mosdns"
 
