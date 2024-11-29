@@ -140,6 +140,7 @@ install_singbox() {
 
 # 用户自定义设置
 customize_settings() {
+    log "安装脚本会清空之前的订阅请务必填写机场订阅"
     echo "是否选择生成配置？(y/n)"
     echo "生成配置文件需要添加机场订阅，如自建vps请选择n"
     read choice
