@@ -37,3 +37,8 @@
 ```shell
 git clone https://github.com/baozaodetudou/mssb.git -b lxc && cd mssb && bash install.sh 
 ```
+
+查看日志
+```shell
+tail -f /var/log/supervisor/*.log
+```
