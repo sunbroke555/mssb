@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-本项目通过 `Docker` 封装 `mosdns` 和 `singbox` 两个服务，实现高效的分流代理。同时，结合 `filebrowser` 用于配置文件的可视化管理，并使用 `MetaCubeXD` 作为 `singbox` 的前端显示界面。
+封装 `mosdns` 和 `singbox` 两个服务，实现高效的分流代理。同时，结合 `filebrowser` 用于配置文件的可视化管理，并使用 `MetaCubeXD` 作为 `singbox` 的前端显示界面。
 
 ---
 
@@ -30,4 +30,10 @@
 6666是singbox的dns端口
 53是mosdns端口
 9090是singbox UI界面端口
+```
 
+安装命令
+仅适用于debian12环境
+```shell
+git clone https://github.com/baozaodetudou/mssb.git -b lxc && cd mssb && bash install.sh 
+```
