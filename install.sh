@@ -372,13 +372,6 @@ configure_files() {
         log "未发现 config.json 文件，跳过备份步骤。"
     fi
 
-    # 检查 /mssb 是否存在，不存在则创建
-    if [ ! -d "/mssb" ]; then
-        log "/mssb 目录不存在，正在创建..."
-        mkdir -p /mssb || { log "创建 /mssb 目录失败！退出脚本。"; exit 1; }
-        log "/mssb 目录创建成功。"
-    fi
-
     # 函数：检查并复制文件夹
     check_and_copy_folder() {
         local folder_name=$1
