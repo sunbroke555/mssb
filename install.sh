@@ -140,8 +140,7 @@ install_singbox() {
 
 # 用户自定义设置
 customize_settings() {
-    log "安装脚本会清空之前的订阅请务必填写机场订阅"
-    echo "是否选择生成配置？(y/n)"
+    echo "是否选择生成配置（更新安装请选择n）？(y/n)"
     echo "生成配置文件需要添加机场订阅，如自建vps请选择n"
     read choice
     if [ "$choice" = "y" ]; then
@@ -373,10 +372,34 @@ configure_files() {
         log "未发现 config.json 文件，跳过备份步骤。"
     fi
 
+    # 检查 /mssb 是否存在，不存在则创建
+    if [ ! -d "/mssb" ]; then
+        log "/mssb 目录不存在，正在创建..."
+        mkdir -p /mssb || { log "创建 /mssb 目录失败！退出脚本。"; exit 1; }
+        log "/mssb 目录创建成功。"
+    fi
+
+    # 函数：检查并复制文件夹
+    check_and_copy_folder() {
+        local folder_name=$1
+        if [ -d "/mssb/$folder_name" ]; then
+            log "/mssb/$folder_name 文件夹已存在，跳过替换。"
+        else
+            cp -r "mssb/$folder_name" "/mssb/" || { log "复制 mssb/$folder_name 目录失败！退出脚本。"; exit 1; }
+            log "成功复制 mssb/$folder_name 目录到 /mssb/"
+        fi
+    }
+
     log "复制配置文件..."
     cp supervisord.conf /etc/supervisor/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
-    cp -r mssb / || { log "复制 mssb 目录失败！退出脚本。"; exit 1; }
     cp -r watch / || { log "复制 watch 目录失败！退出脚本。"; exit 1; }
+
+    # 复制 mssb/sing-box 目录
+    log "复制 mssb/sing-box 目录..."
+    check_and_copy_folder "sing-box"
+    # 复制 fb 和 mosdns 目录，但仅当它们不存在时才进行
+    check_and_copy_folder "fb"
+    check_and_copy_folder "mosdns"
 
     # 如果之前有备份 config.json，则恢复备份文件
     if [ -f "$BACKUP_JSON" ]; then
