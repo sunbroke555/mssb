@@ -361,14 +361,35 @@ check_interfaces() {
 
 # 配置文件和脚本设置
 configure_files() {
+    log "检查是否存在 /mssb/sing-box/config.json ..."
+    CONFIG_JSON="/mssb/sing-box/config.json"
+    BACKUP_JSON="/tmp/config_backup.json"
+
+    # 如果 config.json 存在，则进行备份
+    if [ -f "$CONFIG_JSON" ]; then
+        log "发现 config.json 文件，备份到 /tmp 目录..."
+        cp "$CONFIG_JSON" "$BACKUP_JSON" || { log "备份 config.json 失败！退出脚本。"; exit 1; }
+    else
+        log "未发现 config.json 文件，跳过备份步骤。"
+    fi
+
     log "复制配置文件..."
     cp supervisord.conf /etc/supervisor/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
     cp -r mssb / || { log "复制 mssb 目录失败！退出脚本。"; exit 1; }
     cp -r watch / || { log "复制 watch 目录失败！退出脚本。"; exit 1; }
 
+    # 如果之前有备份 config.json，则恢复备份文件
+    if [ -f "$BACKUP_JSON" ]; then
+        log "恢复 config.json 文件到 /mssb/sing-box ..."
+        cp "$BACKUP_JSON" "$CONFIG_JSON" || { log "恢复 config.json 失败！退出脚本。"; exit 1; }
+        log "恢复完成，删除临时备份文件..."
+        rm -f "$BACKUP_JSON"
+    fi
+
     log "设置脚本可执行权限..."
     chmod +x /watch/*.sh || { log "设置 /watch/*.sh 权限失败！退出脚本。"; exit 1; }
 }
+
 
 reload_service() {
   # 重启 Supervisor
