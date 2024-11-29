@@ -376,7 +376,7 @@ configure_files() {
         if [ -d "/mssb/$folder_name" ]; then
             log "/mssb/$folder_name 文件夹已存在，跳过替换。"
         else
-            cp -r "mssb/$folder_name" "/mssb/" || { log "复制 mssb/$folder_name 目录失败！退出脚本。"; exit 1; }
+            cp -r "mssb/$folder_name" "/mssb" || { log "复制 mssb/$folder_name 目录失败！退出脚本。"; exit 1; }
             log "成功复制 mssb/$folder_name 目录到 /mssb/"
         fi
     }
@@ -387,9 +387,15 @@ configure_files() {
 
     # 复制 mssb/sing-box 目录
     log "复制 mssb/sing-box 目录..."
-    check_and_copy_folder "sing-box"
     check_and_copy_folder "fb"
     check_and_copy_folder "mosdns"
+    check_and_copy_folder "sing-box"
+#    if [ -d "/mssb/sing-box" ]; then
+#        log "/mssb/sing-box 目录已存在，跳过替换。"
+#    else
+#        cp -r mssb/sing-box /mssb || { log "复制 mssb/sing-box 目录失败！退出脚本。"; exit 1; }
+#        log "成功复制 mssb/sing-box 目录到 /mssb/"
+#    fi
 
     # 如果之前有备份 config.json，则恢复备份文件
     if [ -f "$BACKUP_JSON" ]; then
