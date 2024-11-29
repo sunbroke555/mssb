@@ -408,20 +408,19 @@ configure_files() {
 reload_service() {
   # 重启 Supervisor
     log "重启 Supervisor..."
+    if ! supervisorctl stop all; then
+        log "停止 Supervisor 失败！"
+        exit 1
+    fi
+    log "Supervisor 停止成功。"
+    sleep 2
+
     if ! supervisorctl reload; then
         log "重启 Supervisor 失败！"
         exit 1
     fi
     log "Supervisor 重启成功。"
-    sleep 3
-    systemctl restart sing-box-router
-    # 重启 Sing-Box
-    log "重启 Sing-Box..."
-    if ! supervisorctl restart sing-box; then
-        log "重启 Sing-Box 失败！"
-        exit 1
-    fi
-    log "Sing-Box 重启成功。"
+    sleep 2
     systemctl restart sing-box-router
 
 
