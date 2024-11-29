@@ -134,7 +134,6 @@ install_singbox() {
         mv sing-box /usr/local/bin/
         log "Sing-Box 安装完成"
     fi
-    mkdir -p /mssb/sing-box
 }
 
 # 用户自定义设置
