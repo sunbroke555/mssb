@@ -413,8 +413,8 @@ reload_service() {
         exit 1
     fi
     log "Supervisor 重启成功。"
-    sleep 1
-
+    sleep 3
+    systemctl restart sing-box-router
     # 重启 Sing-Box
     log "重启 Sing-Box..."
     if ! supervisorctl restart sing-box; then
@@ -423,7 +423,6 @@ reload_service() {
     fi
     log "Sing-Box 重启成功。"
     systemctl restart sing-box-router
-    systemctl restart nftables
 
 
 }
