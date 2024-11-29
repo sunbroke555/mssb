@@ -63,7 +63,7 @@ rm -rf /tmp/*
 
 # 重启 sing-box 服务
 echo "[$(date)] 正在通过 Supervisor 重启 Sing-box 服务..."
-if supervisorctl restart sing-box && supervisorctl restart sing-box-router; then
+if supervisorctl restart sing-box && systemctl restart sing-box-router; then
     echo "[$(date)] Sing-box 服务重启成功。"
 else
     echo "[$(date)] Sing-box 服务重启失败，请检查 Supervisor 配置。"

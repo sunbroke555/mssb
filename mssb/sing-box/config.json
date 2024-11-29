@@ -62,18 +62,7 @@
       "tag": "✈️机场1",
       "healthcheck_url": "http://www.gstatic.com/generate_204",
       "healthcheck_interval": "10m0s",
-      "download_url": "https://填写你的机场连接1",
-      "download_ua": "clash.meta",
-      "download_interval": "24h0m0s",
-      "download_detour": "direct"
-    },
-    {
-      "type": "remote",
-      "path": "/mssb/sing-box/providers/2.yaml",
-      "tag": "✈️机场2",
-      "healthcheck_url": "http://www.gstatic.com/generate_204",
-      "healthcheck_interval": "10m0s",
-      "download_url": "http://填写你的机场连接2",
+      "download_url": "https://",
       "download_ua": "clash.meta",
       "download_interval": "24h0m0s",
       "download_detour": "direct"
@@ -81,16 +70,11 @@
   ],
   "outbounds": [
     {"tag": "♻️ 手动选择", "type": "selector",
-      "providers": [
-        "✈️机场1",
-        "✈️机场2"
-      ],
+      "use_all_providers": true,
       "excludes": "Premium"
     },
     {"tag": "🚀 节点选择", "type": "selector",
       "outbounds": [
-        "🆓大航海",
-        "🚄奶昔",
         "♻️ 手动选择",
         "🇯🇵 日本节点-urltest",
         "✨台湾节点-urltest",
@@ -141,8 +125,7 @@
       "outbounds": [
         "direct",
         "🚀 节点选择",
-        "♻️ 手动选择",
-        "🆓大航海"
+        "♻️ 手动选择"
       ],
       "excludes": "Premium",
       "default": "direct"
@@ -369,24 +352,6 @@
       ],
       "excludes": "Premium",
       "default": "direct"
-    },
-    {"tag": "🆓大航海", "type": "urltest",
-      "providers": [
-        "✈️机场1"
-      ],
-      "excludes": "Premium",
-      "idle_timeout": "30001h",
-      "interval": "30000h",
-      "tolerance": 50
-    },
-    {"tag": "🚄奶昔", "type": "urltest",
-      "providers": [
-        "✈️机场2"
-      ],
-      "excludes": "Premium",
-      "idle_timeout": "30001h",
-      "interval": "30000h",
-      "tolerance": 50
     },
     {"tag": "block", "type": "block"},
     {"tag": "direct", "type": "direct", "tcp_fast_open": false, "udp_fragment": false, "tcp_multi_path": false},

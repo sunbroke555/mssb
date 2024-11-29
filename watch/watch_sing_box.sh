@@ -10,5 +10,5 @@ while true; do
   echo "Sing-box 配置文件发生变化，重启 Sing-box 服务..."
 
   # 通过 supervisorctl 重启 Sing-box 服务
-  supervisorctl restart sing-box && supervisorctl restart sing-box-router
+  supervisorctl restart sing-box && systemctl restart sing-box-router
 done
