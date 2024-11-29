@@ -394,19 +394,23 @@ cron_jobs=(
 )
 
 # 函数：将任务添加到 crontab 中
+
+# 添加任务到 crontab
 add_cron_jobs() {
+    # 先删除现有的重复任务（如果存在）
+    (crontab -l | grep -v -e "# update_mosdns" -e "# update_sb" -e "# update_cn") | crontab -
+
     for job in "${cron_jobs[@]}"; do
-        # 检查任务是否已经存在，避免重复添加
-        (crontab -l | grep -q "$job") && log "定时任务已存在：$job" && continue
-
-        # 将新的任务添加到 crontab 中
-        (crontab -l; echo "$job") | crontab -
-
-        # 记录日志，表示任务已成功添加
-        log "定时任务已成功添加：$job"
+        # 检查任务是否已存在
+        if (crontab -l | grep -q -F "$job"); then
+            log "定时任务已存在：$job"
+        else
+            # 将新的任务添加到 crontab 中
+            (crontab -l; echo "$job") | crontab -
+            log "定时任务已成功添加：$job"
+        fi
     done
 }
-
 
 
 # 主函数
