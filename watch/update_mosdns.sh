@@ -3,6 +3,8 @@
 # 记录当前时间
 echo "[$(date)] 开始更新 MosDNS..."
 
+# 获取系统架构
+TARGETARCH=$(uname -m)
 # 判断 CPU 架构
 if [[ $(uname -m) == "aarch64" ]]; then
     TARGETARCH="arm64"
@@ -15,7 +17,7 @@ else
     echo "[$(date)] 无法识别的 CPU 架构：$(uname -m)，脚本退出。"
     exit 1  # 退出状态为 1，表示错误退出
 fi
-# 获取系统架构
+
 LATEST_RELEASE_URL="https://github.com/IrineSistiana/mosdns/releases/latest"
 LATEST_VERSION=$(curl -sL -o /dev/null -w %{url_effective} $LATEST_RELEASE_URL | awk -F '/' '{print $NF}')
 MOSDNS_URL="https://github.com/IrineSistiana/mosdns/releases/download/${LATEST_VERSION}/mosdns-linux-${TARGETARCH}.zip"
