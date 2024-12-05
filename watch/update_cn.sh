@@ -25,7 +25,7 @@ download_file() {
 # 开始更新 MosDNS 文件
 echo "[$(date)] 开始更新 MosDNS 文件..."
 
-download_file "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt" "/mssb/mosdns/apple-cn.txt" "apple-cn.txt"
+download_file "https://raw.githubusercontent.com/lingkai995/geoip/refs/heads/release/apple-cn.txt" "/mssb/mosdns/apple-cn.txt" "apple-cn.txt"
 download_file "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt" "/mssb/mosdns/china_ip_list.txt" "china_ip_list.txt"
 download_file "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt" "/mssb/mosdns/direct-list.txt" "direct-list.txt"
 download_file "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt" "/mssb/mosdns/proxy-list.txt" "proxy-list.txt"
