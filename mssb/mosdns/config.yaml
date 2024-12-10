@@ -1,6 +1,6 @@
 log:
   level: error # 设置日志级别为error
-#  file: "./mosdns.log" # 日志文件路径 注释输出至 stderr 。
+  #  file: "./mosdns.log" # 日志文件路径 注释输出至 stderr 。
   production: false # 非生产环境配置
 
 plugins:
@@ -15,23 +15,22 @@ plugins:
   - tag: forward_local
     type: forward
     args:
-      concurrent: 4 # 并发查询数量
+      concurrent: 2 # 并发查询数量
       upstreams:
-        - addr: udp://221.130.33.60
-        - addr: udp://221.179.155.161
-        - addr: udp://119.29.29.29
         - addr: udp://223.5.5.5
+        - addr: udp://119.29.29.29
+#        - addr: udp://2400:3200::1
+#        - addr: udp://2402:4e00::
 
-#   # 转发至国外DNS，拿真实ip
-#   - tag: forward_real
-#     type: forward
-#     args:
-#       concurrent: 1 # 并发查询数量
-#       upstreams:
-#         #- addr: 192.168.20.5:6666  # 本地DNS服务器地址ipv4
-#         #- addr: tcp://192.168.20.5:6666  # TCP协议的本地DNS服务器地址ipv4
-#         - addr: tcp://8.8.8.8
-#           socks5: "192.168.20.2:6153"
+  # 转发至国外DNS，拿真实ip
+  - tag: forward_real
+    type: forward
+    args:
+      concurrent: 1 # 并发查询数量
+      upstreams:
+        #- addr: 192.168.20.5:6666  # 本地DNS服务器地址ipv4
+        #- addr: tcp://192.168.20.5:6666  # TCP协议的本地DNS服务器地址ipv4
+        - addr: tcp://8.8.8.8
 
   # 转发至sb，拿fake ip
   - tag: forward_fake
@@ -73,22 +72,22 @@ plugins:
       - exec: $forward_fake
       - exec: accept # fakeip全部接受
 
-#   # real_fallback的secondary服务器,
-#   - tag: real_sequence
-#     type: sequence
-#     args:
-#       - exec: $forward_real
-#       - matches: "!resp_ip $local_ip"
-#         exec: accept # 只接受国外ip
+  # real_fallback的secondary服务器,
+  - tag: real_sequence
+    type: sequence
+    args:
+      - exec: $forward_real
+      - matches: "!resp_ip $local_ip"
+        exec: accept # 只接受国外ip
 
-#   # fallback_real sequence
-#   - tag: fallback_real
-#     type: fallback
-#     args:
-#       primary: local_sequence
-#       secondary: real_sequence
-#       threshold: 500 # 超时时间，单位为毫秒
-#       always_standby: true # 总是保持备用
+  # fallback_real sequence
+  - tag: fallback_real
+    type: fallback
+    args:
+      primary: local_sequence
+      secondary: real_sequence
+      threshold: 500 # 超时时间，单位为毫秒
+      always_standby: true # 总是保持备用
 
   # fallback_fake sequence
   - tag: fallback_fake
@@ -110,7 +109,7 @@ plugins:
 
       # 拒绝HTTPS类型查询
       - matches: qtype 65
-        exec: reject 3
+        exec: black_hole
 
       # 拒绝在拒绝列表中的域名
       - matches: qname &./reject-list.txt &./my-reject-list.txt
@@ -145,14 +144,14 @@ plugins:
       - matches: has_resp
         exec: accept # 如果有响应，则接受
 
-    #   # 转发国外dns，走real ip
-    #   - matches: qname &./proxy-list.txt
-    #     exec: $forward_real
-    #   - matches: has_resp
-    #     exec: accept # 如果有响应，则接受
+      # 转发国外dns，走real ip
+      - matches: qname &./proxy-list.txt
+        exec: $forward_real
+      - matches: has_resp
+        exec: accept # 如果有响应，则接受
 
-      # 执行fallback_fake策略兜底
-      - exec: $fallback_fake
+      # 执行fallback_real策略兜底
+      - exec: $fallback_real
 
   # 启动监听服务
   - tag: udp_server
