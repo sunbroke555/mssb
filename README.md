@@ -1,5 +1,5 @@
 
-# Mosdns + Singbox Docker 分流代理项目
+# Mosdns + Singbox 虚拟机分流代理项目
 
 ## 项目简介
 
