@@ -114,26 +114,51 @@ install_filebrower() {
 # 安装 Sing-Box
 install_singbox() {
     log "开始安装 Sing-Box"
-    wget -O sing-box-linux-$ARCH.tar.gz https://raw.githubusercontent.com/herozmy/herozmy-private/main/sing-box-puernya/sing-box-linux-$ARCH.tar.gz
+
+    # 检查 ARCH 并设置 SB_ARCH
+    if [ "$ARCH" == "arm64" ]; then
+        SB_ARCH="armv8"
+    else
+        SB_ARCH="$ARCH"  # 默认使用 ARCH 的值
+    fi
+
+    # 定义下载 URL
+    SING_BOX_URL="https://raw.githubusercontent.com/herozmy/herozmy-private/main/sing-box-puernya/sing-box-linux-$SB_ARCH.tar.gz"
+
+    # 下载文件
+    log "正在下载 Sing-Box: $SING_BOX_URL"
+    wget -O "sing-box-linux-$SB_ARCH.tar.gz" "$SING_BOX_URL"
     if [ $? -ne 0 ]; then
         log "Sing-Box 下载失败！退出脚本。"
         exit 1
     fi
-    tar -zxvf sing-box-linux-$ARCH.tar.gz
+
+    # 解压文件
+    tar -zxvf "sing-box-linux-$SB_ARCH.tar.gz"
+    if [ $? -ne 0 ]; then
+        log "解压失败，请检查文件完整性！退出脚本。"
+        exit 1
+    fi
+
+    # 检查是否已安装
     if [ -f "/usr/local/bin/sing-box" ]; then
         log "检测到已安装的 Sing-Box"
         read -p "是否替换升级？(y/n): " replace_confirm
-        if [ "$replace_confirm" = "y" ]; then
+        if [ "$replace_confirm" == "y" ]; then
             log "正在替换升级 Sing-Box"
-            mv sing-box /usr/local/bin/
-            log "Sing-Box P核升级完毕"
+            mv -f sing-box /usr/local/bin/
+            log "Sing-Box 替换升级完成"
         else
             log "用户取消了替换升级操作"
         fi
     else
-        mv sing-box /usr/local/bin/
+        mv -f sing-box /usr/local/bin/
         log "Sing-Box 安装完成"
     fi
+
+    # 清理临时文件
+    rm -f "sing-box-linux-$SB_ARCH.tar.gz"
+    log "临时文件已清理"
 }
 
 # 用户自定义设置
