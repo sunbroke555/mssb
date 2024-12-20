@@ -80,6 +80,9 @@ tail -f /var/log/supervisor/*.log
     - `mosdns` 提供 DNS 解析功能
     - `singbox` 实现代理服务，支持 SOCKS5 和透明代理模式
     - `MetaCubeXD` 提供用户友好的 Web 界面
+4. **使用方法**
+   - 安装完成后只需要把你主路由的dns设置成debain主机的ip
+   - 支持分流设置,可以把你需要科学上网的设备ip写入/mssb/mosdns/proxy-device-list.txt 这个文件,只有ip在这个文件里的设备会走singbox代理，不在的只会走mosdns的加速功能
 
 ---
 
