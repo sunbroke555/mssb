@@ -134,7 +134,7 @@ install_filebrower() {
     log "设置脚本可执行权限..."
     chmod +x /watch/*.sh || { log "设置 /watch/*.sh 权限失败！退出脚本。"; exit 1; }
 
-}
+
 
 reload_service() {
   # 重启 Supervisor
