@@ -111,29 +111,29 @@ install_filebrower() {
     fi
 }
 
-
-
-    # 函数：检查并复制文件夹
-    check_and_copy_folder() {
-        local folder_name=$1
-        if [ -d "/mssb/$folder_name" ]; then
-            log "/mssb/$folder_name 文件夹已存在，跳过替换。"
-        else
-            cp -r "mssb/$folder_name" "/mssb/" || { log "复制 mssb/$folder_name 目录失败！退出脚本。"; exit 1; }
-            log "成功复制 mssb/$folder_name 目录到 /mssb/"
-        fi
-    }
+check_and_copy_folder() {
 
     log "复制配置文件..."
     cp supervisord.conf /etc/supervisor/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
     cp -r watch / || { log "复制 watch 目录失败！退出脚本。"; exit 1; }
+
+    # 复制 mssb/sing-box 目录
+    log "复制 mssb/sing-box 目录..."
+    check_and_copy_folder "fb"
+    check_and_copy_folder "mosdns"
+    if [ -d "/mssb/sing-box" ]; then
+        log "/mssb/sing-box 目录已存在，跳过替换。"
+    else
+        cp -r mssb/sing-box /mssb || { log "复制 mssb/sing-box 目录失败！退出脚本。"; exit 1; }
+        log "成功复制 mssb/sing-box 目录到 /mssb"
+    fi
 
 
 
     log "设置脚本可执行权限..."
     chmod +x /watch/*.sh || { log "设置 /watch/*.sh 权限失败！退出脚本。"; exit 1; }
 
-
+}
 
 reload_service() {
   # 重启 Supervisor
