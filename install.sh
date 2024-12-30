@@ -111,7 +111,15 @@ install_filebrower() {
     fi
 }
 
-check_and_copy_folder() {
+    check_and_copy_folder() {
+        local folder_name=$1
+        if [ -d "/mssb/$folder_name" ]; then
+            log "/mssb/$folder_name 文件夹已存在，跳过替换。"
+        else
+            cp -r "mssb/$folder_name" "/mssb/" || { log "复制 mssb/$folder_name 目录失败！退出脚本。"; exit 1; }
+            log "成功复制 mssb/$folder_name 目录到 /mssb/"
+        fi
+    }
 
     log "复制配置文件..."
     cp supervisord.conf /etc/supervisor/ || { log "复制 supervisord.conf 失败！退出脚本。"; exit 1; }
@@ -121,8 +129,6 @@ check_and_copy_folder() {
     log "复制 mssb/sing-box 目录..."
     check_and_copy_folder "fb"
     check_and_copy_folder "mosdns"
-
-
 
 
     log "设置脚本可执行权限..."
