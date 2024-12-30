@@ -1,0 +1,33 @@
+{
+    "address": "0.0.0.0",
+    "port": 8888,
+    "database": "/mssb/fb/fb.db",
+    "root": "/mssb",
+    "baseURL": "/mssb",
+    "locale": "zh-cn",
+    "authMethod": "default",
+    "branding": {
+      "name": "mssb文件编辑",
+      "disableExternal": false,
+      "files": ""
+    },
+    "defaults": {
+      "scope": "/",
+      "locale": "zh-cn",
+      "viewMode": "mosaic",
+      "singleClick": false,
+      "permissions": {
+        "admin": false,
+        "execute": true,
+        "create": true,
+        "rename": true,
+        "modify": true,
+        "delete": true,
+        "share": true,
+        "download": true
+      }
+    },
+    "commands": [],
+    "shell": "/bin/bash"
+  }
+  

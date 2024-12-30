@@ -1,0 +1,117 @@
+log:
+  level: info
+  file: "/var/log/mosdns.log"
+
+api:
+  http: "0.0.0.0:8080"
+
+plugins:
+  - tag: forward_local
+    type: forward
+    args:
+      concurrent: 5
+      upstreams:
+        - addr: udp://211.140.13.188 #浙江移动
+        - addr: udp://211.140.188.188 #浙江移动2
+        - addr: udp://223.5.5.5     # 使用国内IPv4地址
+        - addr: udp://119.29.29.29
+
+  - tag: forward_remote
+    type: forward
+    args:
+      concurrent: 5
+      upstreams:
+        - addr: udp://192.168.0.3:1053
+
+  - tag: proxy_dns
+    type: sequence
+    args:
+      - exec: query_summary forward_remote
+      - exec: $forward_remote
+      - exec: ttl 1
+
+  - tag: china_dns
+    type: sequence
+    args:
+      - exec: cache 1024
+      - matches:
+          - has_resp
+        exec: accept
+      - exec: query_summary forward_local
+      - exec: $forward_local
+
+  - tag: "cn_match"
+    type: "domain_set"
+    args:
+      files:
+        - /mssb/mosdns/sites/china-list.txt
+        - /mssb/mosdns/sites/direct-tld-list.txt
+        - /mssb/mosdns/sites/apple-cn.txt
+
+  - tag: "proxy_match"
+    type: "domain_set"
+    args:
+      files:
+        - /mssb/mosdns/sites/proxy-list.txt
+
+  - tag: "custom_direct"
+    type: "domain_set"
+    args:
+      files:
+        - /mssb/mosdns/custom/direct.txt
+        - /mssb/mosdns/custom/tracker.txt
+
+  - tag: "custom_proxy"
+    type: "domain_set"
+    args:
+      files:
+        - /mssb/mosdns/custom/proxy.txt
+
+  - tag: "ptr_match"
+    type: "domain_set"
+    args:
+      files:
+        - /mssb/mosdns/sites/local_ptr.txt
+
+  - tag: sequence_main
+    type: sequence
+    args:
+      - exec: metrics_collector metrics
+      - matches:
+          - qtype 65
+        exec: black_hole
+
+      - matches:
+          - qtype 12
+          - qname $ptr_match
+        exec: reject 3
+
+      - exec: prefer_ipv4
+############################
+#自定义直链
+      - matches:
+          - qname $custom_direct
+        exec: goto china_dns
+#自定义代理
+      - matches:
+          - qname $custom_proxy
+        exec: goto proxy_dns
+#######################
+      - matches:
+          - qname $proxy_match
+        exec: goto proxy_dns
+
+      - matches:
+          - qname $cn_match
+        exec: goto china_dns
+
+      - exec: goto proxy_dns
+
+  - type: udp_server
+    args:
+      entry: sequence_main
+      listen: :53
+  - type: tcp_server
+    args:
+      entry: sequence_main
+      listen: :53
