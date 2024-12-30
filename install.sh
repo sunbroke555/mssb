@@ -121,12 +121,7 @@ check_and_copy_folder() {
     log "复制 mssb/sing-box 目录..."
     check_and_copy_folder "fb"
     check_and_copy_folder "mosdns"
-    if [ -d "/mssb/sing-box" ]; then
-        log "/mssb/sing-box 目录已存在，跳过替换。"
-    else
-        cp -r mssb/sing-box /mssb || { log "复制 mssb/sing-box 目录失败！退出脚本。"; exit 1; }
-        log "成功复制 mssb/sing-box 目录到 /mssb"
-    fi
+
 
 
 
